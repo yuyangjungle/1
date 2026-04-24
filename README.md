@@ -8,6 +8,7 @@
 - GitHub Pages：`https://yuyangjungle.github.io/1/`
 
 说明：仓库代码已经上传完成。若 Pages 还未开启，上面的体验链接暂时会返回 `404`。在仓库里打开 `Settings -> Pages`，将发布源设置为 `main` 分支的 `/(root)` 后即可生效。
+建议：如果准备把仓库名从 `1` 改成更正式的名字，最好先改名，再开启 Pages，这样展示链接会一步到位。
 
 ## 项目亮点
 
