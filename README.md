@@ -7,7 +7,7 @@
 - GitHub 仓库：[yuyangjungle/1](https://github.com/yuyangjungle/1)
 - GitHub Pages：`https://yuyangjungle.github.io/1/`
 
-说明：仓库代码已经上传完成。若 Pages 还未开启，上面的体验链接暂时会返回 `404`。在仓库里打开 `Settings -> Pages`，将发布源设置为 `main` 分支的 `/(root)` 后即可生效。当前展示阶段继续沿用 `/1/` 这个地址，后续如需改名可再调整。
+说明：当前公开地址为 `/1/`。若 GitHub Pages 还未开启，上面的体验链接会返回 `404`；启用后即可直接访问。
 
 ## 项目亮点
 
@@ -58,7 +58,7 @@
 └── README.md
 ```
 
-之所以只有一个 `index.html`，是因为样式和脚本都内联在同一个文件里，部署门槛最低，适合快速部署和体验。
+之所以只有一个 `index.html`，是因为样式和脚本都内联在同一个文件里，部署门槛低，便于直接托管和快速体验。
 
 ## 本地运行
 
