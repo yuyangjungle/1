@@ -1,13 +1,13 @@
-# 指尖三国：谋定天下
+# 指尖三国
 
 一个单文件纯前端塔防小游戏。玩家在固定行军路线上布置武将防线，利用军费、谋略值和主动技能挡住一波又一波敌军，完成守城通关。
 
 ## 在线体验
 
-- GitHub 仓库：[yuyangjungle/1](https://github.com/yuyangjungle/1)
-- GitHub Pages：`https://yuyangjungle.github.io/1/`
+- GitHub 仓库：[yuyangjungle/three-kingdoms-defense](https://github.com/yuyangjungle/three-kingdoms-defense)
+- GitHub Pages：`https://yuyangjungle.github.io/three-kingdoms-defense/`
 
-说明：当前公开地址为 `/1/`。若 GitHub Pages 还未开启，上面的体验链接会返回 `404`；启用后即可直接访问。
+说明：当前公开地址为 `/three-kingdoms-defense/`。若 GitHub Pages 还未开启，上面的体验链接会返回 `404`；启用后即可直接访问。
 
 ## 项目亮点
 
@@ -92,10 +92,10 @@ npx serve .
 https://<github-username>.github.io/<repo-name>/
 ```
 
-当前仓库名为 `1`，因此地址会是：
+当前仓库名为 `three-kingdoms-defense`，因此地址会是：
 
 ```text
-https://yuyangjungle.github.io/1/
+https://yuyangjungle.github.io/three-kingdoms-defense/
 ```
 
 ## 后续规划
@@ -104,4 +104,4 @@ https://yuyangjungle.github.io/1/
 - 增加移动端适配和触屏交互
 - 加入更多关卡、敌人类型和成长系统
 - 为 README 增加截图或录屏 GIF
-- 将仓库名从 `1` 调整为更适合展示的正式项目名，例如 `sanguo-td-game`
+- 为首页补充截图或演示视频，进一步完善项目展示
