@@ -3,46 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>指尖三国：谋定天下 (静态部署版)</title>
+    <title>指尖三国</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="description" content="一个单文件纯前端三国题材塔防小游戏，支持剧情模式、无尽模式、战况建议与本地存档。">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&display=swap');
 
         body { margin: 0; overflow: hidden; background-color: #050505; font-family: 'Microsoft YaHei', sans-serif; user-select: none; color: #fff; }
-        #game-container { display: flex; flex-direction: column; height: 100vh; max-width: 1000px; margin: 0 auto; background-color: #1a1512; box-shadow: 0 0 50px rgba(0,0,0,1); border-left: 4px solid #5d4037; border-right: 4px solid #5d4037; position: relative; }
-        #top-bar { background: linear-gradient(to bottom, #2d1e16, #140d09); padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #bcaaa4; box-shadow: 0 5px 15px rgba(0,0,0,0.8); z-index: 10; }
-        #canvas-wrapper { flex-grow: 1; position: relative; background-color: #000; overflow: hidden; display: flex; justify-content: center; align-items: center; }
-        canvas { display: block; background-color: transparent; cursor: crosshair; box-shadow: inset 0 0 50px rgba(0,0,0,1); }
-        #bottom-bar { background: linear-gradient(to top, #140d09, #2d1e16); padding: 15px; border-top: 2px solid #bcaaa4; display: flex; justify-content: center; gap: 15px; z-index: 10; }
 
-        .tower-btn { background: linear-gradient(to bottom, #3e2723, #1b100b); border: 2px solid #5d4037; border-radius: 6px; padding: 10px; color: #d7ccc8; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; width: 100px; position: relative; }
+        #game-container {
+            display: flex; flex-direction: column; height: 100vh; max-width: 1000px; margin: 0 auto;
+            background-color: #1a1512; box-shadow: 0 0 50px rgba(0,0,0,1);
+            border-left: 4px solid #5d4037; border-right: 4px solid #5d4037;
+            position: relative;
+        }
+
+        #top-bar {
+            background: linear-gradient(to bottom, #2d1e16, #140d09);
+            padding: 10px 25px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #bcaaa4; box-shadow: 0 5px 15px rgba(0,0,0,0.8); z-index: 10;
+        }
+
+        #canvas-wrapper {
+            flex-grow: 1; position: relative; background-color: #000; overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        canvas {
+            display: block; background-color: transparent; cursor: crosshair;
+            box-shadow: inset 0 0 50px rgba(0,0,0,1);
+        }
+
+        #bottom-bar {
+            background: linear-gradient(to top, #140d09, #2d1e16); padding: 15px;
+            border-top: 2px solid #bcaaa4; display: flex; justify-content: center; gap: 15px; z-index: 10;
+        }
+
+        .tower-btn {
+            background: linear-gradient(to bottom, #3e2723, #1b100b);
+            border: 2px solid #5d4037; border-radius: 6px; padding: 10px;
+            color: #d7ccc8; cursor: pointer; transition: all 0.2s;
+            display: flex; flex-direction: column; align-items: center; width: 100px; position: relative;
+        }
         .tower-btn:hover:not(.locked):not(.disabled) { border-color: #ffb300; transform: translateY(-5px); box-shadow: 0 8px 15px rgba(255, 179, 0, 0.3); }
         .tower-btn.selected { border-color: #e53935; background: linear-gradient(to bottom, #5c1e1e, #2b0d0d); transform: translateY(-3px) scale(1.05); }
         .tower-btn.disabled { opacity: 0.5; filter: grayscale(100%); cursor: not-allowed; }
         .tower-btn.locked { opacity: 0.3; filter: grayscale(100%) brightness(0.5); cursor: not-allowed; }
-        .tower-icon { width: 50px; height: 50px; border-radius: 4px; margin-bottom: 8px; background: #000; border: 2px solid #8d6e63; }
-        .stat-box { background: rgba(0,0,0,0.6); padding: 6px 15px; border-radius: 4px; border: 1px solid #795548; display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 1.1rem; }
+
+        .tower-icon {
+            width: 50px; height: 50px; border-radius: 4px; margin-bottom: 8px;
+            background: #000; border: 2px solid #8d6e63;
+        }
+
+        .stat-box {
+            background: rgba(0,0,0,0.6); padding: 6px 15px; border-radius: 4px;
+            border: 1px solid #795548; display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 1.1rem;
+        }
+
         #strategy-bar-container { width: 200px; height: 22px; background: #000; border: 1px solid #29b6f6; border-radius: 11px; overflow: hidden; position: relative; }
         #strategy-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #0277bd, #29b6f6); transition: width 0.2s; }
         #strategy-text { position: absolute; width: 100%; text-align: center; font-size: 12px; line-height: 22px; color: white; font-weight: bold; top: 0; left: 0; text-shadow: 1px 1px 2px black; }
 
-        .overlay-menu { position: absolute; inset: 0; background: rgba(10, 5, 0, 0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 50; backdrop-filter: blur(5px); }
-        .menu-panel { background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%232c1e16" /><path d="M0,50 Q25,25 50,50 T100,50" stroke="%233e2723" fill="none" opacity="0.3"/></svg>'); border: 4px solid #8d6e63; padding: 40px; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,1); max-width: 600px; width: 90%; border-radius: 8px; }
+        .overlay-menu {
+            position: absolute; inset: 0; background: rgba(10, 5, 0, 0.9); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 50; backdrop-filter: blur(5px);
+        }
+        .menu-panel {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%232c1e16" /><path d="M0,50 Q25,25 50,50 T100,50" stroke="%233e2723" fill="none" opacity="0.3"/></svg>');
+            border: 4px solid #8d6e63; padding: 40px; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,1);
+            max-width: 600px; width: 90%; border-radius: 8px;
+        }
         .title-text { font-family: 'Zhi Mang Xing', cursive; font-size: 4.5rem; color: #ffb300; text-shadow: 3px 3px 0 #b71c1c; margin-bottom: 10px; }
-        .btn-main { background: linear-gradient(to bottom, #d32f2f, #b71c1c); border: 2px solid #ffca28; color: #fff; padding: 12px 30px; font-size: 1.5rem; font-family: 'Zhi Mang Xing', cursive; cursor: pointer; transition: all 0.2s; border-radius: 4px; margin: 10px; min-width: 180px; }
+
+        .btn-main {
+            background: linear-gradient(to bottom, #d32f2f, #b71c1c); border: 2px solid #ffca28; color: #fff;
+            padding: 12px 30px; font-size: 1.5rem; font-family: 'Zhi Mang Xing', cursive; cursor: pointer;
+            transition: all 0.2s; border-radius: 4px; margin: 10px; min-width: 180px;
+        }
         .btn-main:hover { transform: scale(1.05); background: linear-gradient(to bottom, #f44336, #d32f2f); box-shadow: 0 0 15px rgba(255, 202, 40, 0.5); }
         .btn-sub { background: #3e2723; border: 1px solid #8d6e63; color: #d7ccc8; padding: 8px 20px; cursor: pointer; margin: 5px; border-radius: 4px; transition: all 0.2s; }
         .btn-sub:hover { background: #5d4037; color: #fff; border-color: #ffb300; }
         .btn-ai { background: linear-gradient(to right, #1565c0, #0277bd); border-color: #4fc3f7; font-weight: bold; position: relative; overflow: hidden; }
         .btn-ai::after { content: '✨'; position: absolute; top: -5px; right: -5px; font-size: 10px; opacity: 0.8; }
+
         .lock-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 12px; color: #ff5252; font-weight: bold; border-radius: 6px; }
         #hud-tools { position: absolute; top: 80px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 20; }
 
-        #combo-display { position: absolute; top: 120px; left: 50%; transform: translateX(-50%) scale(0.5); font-family: 'Zhi Mang Xing', cursive; font-size: 4rem; color: #ffca28; text-shadow: 0 0 15px #e65100, 3px 3px 0 #000; opacity: 0; pointer-events: none; z-index: 30; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #combo-display {
+            position: absolute; top: 120px; left: 50%; transform: translateX(-50%) scale(0.5); font-family: 'Zhi Mang Xing', cursive;
+            font-size: 4rem; color: #ffca28; text-shadow: 0 0 15px #e65100, 3px 3px 0 #000;
+            opacity: 0; pointer-events: none; z-index: 30; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
         #combo-display.active { opacity: 1; transform: translateX(-50%) scale(1); }
-        #toast-msg { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(255, 179, 0, 0.9); color: #000; padding: 10px 30px; border-radius: 20px; font-weight: bold; opacity: 0; transition: opacity 0.3s; z-index: 100; pointer-events: none; }
 
-        #ai-advisor-panel { display: none; position: absolute; top: 100px; left: 50%; transform: translateX(-50%); background: linear-gradient(to bottom, #1e3a5f, #0d1b2a); border: 2px solid #64b5f6; padding: 20px; border-radius: 10px; width: 400px; z-index: 60; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        #toast-msg {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(255, 179, 0, 0.9); color: #000;
+            padding: 10px 30px; border-radius: 20px; font-weight: bold; opacity: 0; transition: opacity 0.3s; z-index: 100; pointer-events: none;
+        }
+
+        #ai-advisor-panel {
+            display: none; position: absolute; top: 100px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(to bottom, #1e3a5f, #0d1b2a); border: 2px solid #64b5f6;
+            padding: 20px; border-radius: 10px; width: 400px; z-index: 60; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
         #ai-avatar { font-family: 'Zhi Mang Xing', cursive; font-size: 3rem; color: #81d4fa; text-shadow: 0 0 10px #0277bd; margin-right: 15px; }
         #ai-text-box { color: #e1f5fe; font-size: 14px; line-height: 1.6; min-height: 80px; }
         .typing-indicator { display: inline-block; width: 6px; height: 16px; background-color: #fff; animation: blink 1s step-end infinite; margin-left: 3px; vertical-align: -2px; }
@@ -92,14 +155,14 @@
         <div id="main-menu" class="overlay-menu">
             <div class="menu-panel">
                 <div class="title-text">指尖三国</div>
-                <p class="text-gray-300 mb-6">谋定天下 · 静态部署版</p>
+                <p class="text-gray-300 mb-6">三国塔防小游戏</p>
                 <div class="flex flex-col gap-4 items-center">
                     <button class="btn-main" id="btn-campaign">剧情模式 (10波通关)</button>
                     <button class="btn-main" id="btn-endless">无尽模式 (轮回挑战)</button>
                 </div>
                 <div class="mt-6 text-sm text-left bg-black bg-opacity-50 p-4 border border-gray-700 rounded text-gray-300">
                     <p class="text-blue-400 font-bold mb-2">【军师推演系统】</p>
-                    <p>静态部署版内置战况分析。点击“智囊妙计”，军师会结合当前兵力、波次、谋略与布阵，给出简短的战术建议；本地存档可直接保存在浏览器中。</p>
+                    <p>游戏内置战况分析与本地存档。点击“智囊妙计”，军师会结合当前兵力、波次、谋略与布阵，给出简短的战术建议；进度会保存在当前浏览器中。</p>
                 </div>
             </div>
         </div>
@@ -247,7 +310,9 @@ function showToast(msg) {
     const el = document.getElementById('toast-msg');
     el.innerText = msg;
     el.style.opacity = 1;
-    setTimeout(() => { el.style.opacity = 0; }, 2000);
+    setTimeout(() => {
+        el.style.opacity = 0;
+    }, 2000);
 }
 
 function setAdvisorText(text, showCursor = false) {
@@ -277,7 +342,9 @@ function typeAdvisorMessage(text) {
 
 function getTowerCounts() {
     const counts = { archer: 0, zhangfei: 0, guanyu: 0, zhuge: 0 };
-    towers.forEach(tower => { counts[tower.type] += 1; });
+    towers.forEach(tower => {
+        counts[tower.type] += 1;
+    });
     return counts;
 }
 
@@ -302,7 +369,9 @@ function generateAdvisorAdvice() {
     return '局势尚稳，攒钱等转折，再落关键一子。';
 }
 
-async function fetchGeminiAdvice() { return generateAdvisorAdvice(); }
+async function fetchGeminiAdvice() {
+    return generateAdvisorAdvice();
+}
 
 function serializeGame() {
     return {
@@ -313,7 +382,13 @@ function serializeGame() {
         lives,
         wave,
         strategy,
-        towers: towers.map(tower => ({ type: tower.type, gx: tower.gridX, gy: tower.gridY, level: tower.level, xp: tower.xp }))
+        towers: towers.map(tower => ({
+            type: tower.type,
+            gx: tower.gridX,
+            gy: tower.gridY,
+            level: tower.level,
+            xp: tower.xp
+        }))
     };
 }
 
@@ -391,10 +466,9 @@ document.getElementById('btn-advisor').onclick = async () => {
 document.getElementById('btn-save').onclick = () => {
     try {
         localStorage.setItem(SAVE_KEY, JSON.stringify(serializeGame()));
-        showToast('✓ 已保存到本地');
+        showToast('✓ 已保存本地存档');
     } catch (error) {
-        console.error(error);
-        showToast('保存失败');
+        showToast('存档失败');
     }
 };
 
@@ -405,27 +479,27 @@ document.getElementById('btn-load').onclick = () => {
             showToast('暂无本地存档');
             return;
         }
-        const data = JSON.parse(raw);
-        gameMode = data.gameMode || 'campaign';
-        currentTheme = data.currentTheme || 'forest';
-        money = Number(data.money) || 350;
-        lives = Number(data.lives) || 10;
-        wave = Math.max(1, Number(data.wave) || 1);
-        strategy = Number(data.strategy) || 0;
-        towers = (data.towers || []).map(savedTower => {
-            const tower = new Tower(savedTower.type, savedTower.gx, savedTower.gy);
-            applyTowerProgress(tower, Math.max(1, savedTower.level || 1), Math.max(0, savedTower.xp || 0));
-            return tower;
-        });
+        const save = JSON.parse(raw);
+        gameMode = save.gameMode || 'campaign';
+        currentTheme = save.currentTheme || 'forest';
+        money = save.money ?? 350;
+        lives = save.lives ?? 10;
+        wave = save.wave ?? 1;
+        strategy = save.strategy ?? 0;
+        comboCount = 0;
+        comboTimer = 0;
+        screenShakeTimer = 0;
+        shakeMagnitude = 0;
         enemies = [];
         projectiles = [];
         particles = [];
         floatingTexts = [];
         rings = [];
-        comboCount = 0;
-        comboTimer = 0;
-        screenShakeTimer = 0;
-        shakeMagnitude = 0;
+        towers = (save.towers || []).map(item => {
+            const tower = new Tower(item.type, item.gx, item.gy);
+            applyTowerProgress(tower, item.level || 1, item.xp || 0);
+            return tower;
+        });
         resetPlacementSelection();
         syncWaveState(true);
         initBackground();
@@ -437,7 +511,6 @@ document.getElementById('btn-load').onclick = () => {
         startLoop();
         showToast('✓ 已读取本地存档');
     } catch (error) {
-        console.error(error);
         showToast('读取失败');
     }
 };
@@ -592,10 +665,12 @@ function buildBottomBar() {
     Object.keys(TOWER_DATA).forEach(type => {
         const data = TOWER_DATA[type];
         const isLocked = wave < data.unlockWave;
-        const button = document.createElement('div');
-        button.className = `tower-btn ${isLocked ? 'locked' : ''}`;
-        button.id = `btn-${type}`;
-        button.onclick = () => { if (!isLocked) selectTower(type); };
+        const btn = document.createElement('div');
+        btn.className = `tower-btn ${isLocked ? 'locked' : ''}`;
+        btn.id = `btn-${type}`;
+        btn.onclick = () => {
+            if (!isLocked) selectTower(type);
+        };
 
         const iconCanvas = document.createElement('canvas');
         iconCanvas.width = 50;
@@ -604,22 +679,22 @@ function buildBottomBar() {
         iconCtx.translate(25, 25);
         drawArtSymbol(iconCtx, type, 20);
 
-        button.innerHTML = `<div class="tower-icon" style="background-image: url(${iconCanvas.toDataURL()}); background-size: cover;"></div>
+        btn.innerHTML = `<div class="tower-icon" style="background-image: url(${iconCanvas.toDataURL()}); background-size: cover;"></div>
             <div class="font-bold">${data.name}</div><div class="text-sm text-yellow-500 font-bold mt-1">💰 ${data.cost}</div>
             <div class="text-xs text-gray-400 mt-1 text-center">${data.desc}</div>${isLocked ? `<div class="lock-overlay">第${data.unlockWave}波解锁</div>` : ''}`;
-        bar.appendChild(button);
+        bar.appendChild(btn);
     });
 }
 
 class Enemy {
-    constructor(waveNum, boss = false) {
+    constructor(waveNum, isBoss = false) {
         this.x = waypoints[0].x;
         this.y = waypoints[0].y;
         this.waypointIndex = 0;
-        this.isBoss = boss;
+        this.isBoss = isBoss;
         this.active = true;
         const hpMultiplier = Math.pow(1.15, waveNum);
-        if (boss) {
+        if (isBoss) {
             this.maxHp = 3000 * Math.max(1, Math.floor(waveNum / 10));
             this.speed = 40;
             this.color = '#b71c1c';
@@ -629,11 +704,26 @@ class Enemy {
         } else {
             const rand = Math.random();
             if (rand < 0.25 && waveNum > 2) {
-                this.maxHp = 150 * hpMultiplier; this.speed = 35; this.color = '#795548'; this.char = '盾'; this.radius = 18; this.reward = 15;
+                this.maxHp = 150 * hpMultiplier;
+                this.speed = 35;
+                this.color = '#795548';
+                this.char = '盾';
+                this.radius = 18;
+                this.reward = 15;
             } else if (rand < 0.45 && waveNum > 4) {
-                this.maxHp = 80 * hpMultiplier; this.speed = 85; this.color = '#6a1b9a'; this.char = '骑'; this.radius = 14; this.reward = 12;
+                this.maxHp = 80 * hpMultiplier;
+                this.speed = 85;
+                this.color = '#6a1b9a';
+                this.char = '骑';
+                this.radius = 14;
+                this.reward = 12;
             } else {
-                this.maxHp = 60 * hpMultiplier; this.speed = 55; this.color = '#f57f17'; this.char = '贼'; this.radius = 13; this.reward = 8;
+                this.maxHp = 60 * hpMultiplier;
+                this.speed = 55;
+                this.color = '#f57f17';
+                this.char = '贼';
+                this.radius = 13;
+                this.reward = 8;
             }
         }
         this.hp = this.maxHp;
@@ -670,7 +760,7 @@ class Enemy {
     }
 
     draw(drawCtx) {
-        if (!this.active) return;
+        if (!this.active || this.hp <= 0) return;
         if (this.isBoss) {
             drawCtx.shadowBlur = 20;
             drawCtx.shadowColor = 'red';
@@ -1104,9 +1194,19 @@ function resetGameState() {
     syncWaveState(true);
 }
 
-document.getElementById('btn-campaign').onclick = () => { gameMode = 'campaign'; startGame(); };
-document.getElementById('btn-endless').onclick = () => { gameMode = 'endless'; startGame(); };
-document.getElementById('btn-menu').onclick = () => { showMainMenu(); };
+document.getElementById('btn-campaign').onclick = () => {
+    gameMode = 'campaign';
+    startGame();
+};
+
+document.getElementById('btn-endless').onclick = () => {
+    gameMode = 'endless';
+    startGame();
+};
+
+document.getElementById('btn-menu').onclick = () => {
+    showMainMenu();
+};
 
 function startGame() {
     hideOverlaysForPlay();
